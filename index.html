@@ -742,6 +742,53 @@
     margin-top: 32px;
   }
 
+  /* ── AUTH MODE TOGGLES ─────────────────────── */
+  /* Default: show password form (in case JS hasn't run yet) */
+  .auth-google-only { display: none; }
+  body.auth-google .auth-google-only { display: block; }
+  body.auth-google .auth-password-only { display: none; }
+  body.auth-password .auth-password-only { display: block; }
+  body.auth-password .auth-google-only { display: none; }
+
+  .google-btn {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #fff;
+    color: #1f1f1f;
+    border: 1px solid #dadce0;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    cursor: pointer;
+    transition: all .25s var(--ease);
+    margin-top: 8px;
+  }
+  .google-btn:hover:not(:disabled) {
+    background: #f8f9fa;
+    border-color: #1f1f1f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+  .google-btn:disabled { opacity: .6; cursor: not-allowed; }
+  .google-btn.is-loading span::after {
+    content: '…';
+    display: inline-block;
+    margin-left: 4px;
+    animation: pulse 1.4s infinite;
+  }
+  .auth-fineprint {
+    margin: 16px 0 0;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
   /* ── VIEWER MODAL ──────────────────────────── */
   .viewer {
     position: fixed;
@@ -1466,7 +1513,7 @@
       </span>
       <span class="admin-badge admin-only" title="Logged in as admin">
         <span class="dot"></span>
-        Admin
+        <span class="admin-label">Admin</span>
       </span>
       <button class="btn btn-ghost admin-only" onclick="logout()" style="padding:8px 14px;font-size:13px;">Log out</button>
     </div>
@@ -1665,17 +1712,35 @@
 <div class="modal-backdrop" id="login-modal" onclick="if(event.target===this)closeLogin()">
   <div class="modal" style="max-width:420px;">
     <h2>Admin sign in</h2>
-    <p class="modal-sub">Enter the admin password to manage projects.</p>
-    <div class="field">
-      <label for="login-pass">Password</label>
-      <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeLogin()">Cancel</button>
-      <button class="btn" onclick="doLogin()">
-        Sign in
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+
+    <!-- Google sign-in (shown when Firebase Auth is configured) -->
+    <div class="auth-google-only">
+      <p class="modal-sub">Sign in with the Google account that has admin access to manage projects.</p>
+      <button id="google-signin-btn" class="google-btn" onclick="doLoginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8a12 12 0 010-24c3 0 5.8 1.1 7.9 3l5.7-5.7C33.7 6.1 29.1 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C33.7 6.1 29.1 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5 0 9.6-1.9 13-5l-6-5.1c-1.9 1.4-4.3 2.2-7 2.2-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.6 39.7 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.8l6 5.1c-.4.4 6.4-4.7 6.4-15 0-1.3-.1-2.4-.4-3.4z"/></svg>
+        <span>Continue with Google</span>
       </button>
+      <p class="auth-fineprint">Only emails on the admin whitelist can manage projects. Everyone else stays in customer view.</p>
+    </div>
+
+    <!-- Password sign-in (fallback when Firebase is NOT configured) -->
+    <div class="auth-password-only">
+      <p class="modal-sub">Enter the admin password to manage projects.</p>
+      <div class="field">
+        <label for="login-pass">Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeLogin()">Cancel</button>
+        <button class="btn" onclick="doLogin()">
+          Sign in
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="auth-google-only modal-actions" style="margin-top:24px;">
+      <button class="btn btn-ghost" onclick="closeLogin()">Cancel</button>
     </div>
   </div>
 </div>
@@ -1745,16 +1810,21 @@
   import {
     getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs, writeBatch
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
   window.RealtimeStore = {
+    _app: null,
     _db: null,
+    _auth: null,
     _col: null,
     _unsub: null,
 
     init(config, onChange, onStatus) {
       try {
-        const app = initializeApp(config);
-        this._db = getFirestore(app);
+        this._app = initializeApp(config);
+        this._db = getFirestore(this._app);
         this._col = collection(this._db, 'projects');
         onStatus && onStatus('connecting');
 
@@ -1762,7 +1832,6 @@
           snap => {
             const items = [];
             snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-            // Sort by createdAt if present, otherwise by id
             items.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
             onChange(items);
             onStatus && onStatus('live');
@@ -1780,6 +1849,32 @@
       }
     },
 
+    // Auth ───────────────────────────────────
+    initAuth(adminEmails, onAuthChange) {
+      if (!this._app) return false;
+      this._auth = getAuth(this._app);
+      // Persist sign-in across tabs / refreshes
+      setPersistence(this._auth, browserLocalPersistence).catch(() => {});
+      const whitelist = (adminEmails || []).map(e => (e || '').toLowerCase());
+      onAuthStateChanged(this._auth, user => {
+        const email = user?.email?.toLowerCase() || '';
+        const isAdmin = !!user && whitelist.includes(email);
+        onAuthChange({ user, email: user?.email || '', name: user?.displayName || '', photoURL: user?.photoURL || '', isAdmin });
+      });
+      return true;
+    },
+    async signInWithGoogle() {
+      if (!this._auth) throw new Error('Auth not initialized');
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      return signInWithPopup(this._auth, provider);
+    },
+    async signOutUser() {
+      if (!this._auth) return;
+      return signOut(this._auth);
+    },
+
+    // Firestore writes ───────────────────────
     async add(project) {
       const { id, ...data } = project;
       data.createdAt = data.createdAt || Date.now();
@@ -1821,6 +1916,13 @@
   };
   const HAS_FIREBASE = FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE_");
 
+  // ── Admin whitelist ─────────────────────────
+  // Email(s) that are allowed to manage projects when signed in via Google.
+  // Add more emails (separated by commas) if you want collaborators.
+  const ADMIN_EMAILS = [
+    "sarceyut2007@gmail.com",
+  ];
+
   // ── State ───────────────────────────────────
   const SAMPLE = [
     { id: 'p1', title: 'Anthropic', desc: 'AI safety, designed for humans.', url: 'https://www.anthropic.com', tag: 'web' },
@@ -1846,16 +1948,29 @@
           items => {
             projects = items;
             render();
-            // Seed sample data on first run if collection is empty
-            if (items.length === 0 && !this._seeded) {
+            // Seed sample data on first run if collection is empty AND we're admin
+            // (writes need auth in production rules — only admin can seed).
+            if (items.length === 0 && !this._seeded && isAdmin()) {
               this._seeded = true;
-              window.RealtimeStore.seedIfEmpty(SAMPLE).catch(() => {});
+              window.RealtimeStore.seedIfEmpty(SAMPLE).catch(err => console.warn('Seed skipped:', err.message));
             }
           },
           status => setSyncStatus(status)
         );
         if (!ok) { this.mode = 'local'; this._loadLocal(); }
-        else onReady && onReady();
+        else {
+          // Wire up the auth listener
+          window.RealtimeStore.initAuth(ADMIN_EMAILS, state => {
+            _authState = state;
+            applyAuth();
+            render();
+            if (state.isAdmin && projects.length === 0 && !this._seeded) {
+              this._seeded = true;
+              window.RealtimeStore.seedIfEmpty(SAMPLE).catch(err => console.warn('Seed skipped:', err.message));
+            }
+          });
+          onReady && onReady();
+        }
       } else {
         this.mode = 'local';
         this._loadLocal();
@@ -2176,20 +2291,43 @@
     }
   });
 
-  // ── Auth (client-side only — change ADMIN_PASSWORD below) ─────
+  // ── Auth ────────────────────────────────────
+  // Two modes:
+  //   • Firebase Auth (when FIREBASE_CONFIG is set): real Google sign-in. Only emails
+  //     in ADMIN_EMAILS get admin powers. Firestore rules should also enforce this.
+  //   • Password fallback (no Firebase): a local password stored in code.
   const ADMIN_PASSWORD = 'GhdFnty6542_!!';
   const AUTH_KEY = 'portfolio.auth.v1';
+  let _authState = { user: null, email: '', name: '', photoURL: '', isAdmin: false };
 
-  function isAdmin() { return localStorage.getItem(AUTH_KEY) === '1'; }
-  function applyAuth() { document.body.classList.toggle('is-admin', isAdmin()); }
+  function isAdmin() {
+    if (HAS_FIREBASE) return !!_authState.isAdmin;
+    return localStorage.getItem(AUTH_KEY) === '1';
+  }
+
+  function applyAuth() {
+    document.body.classList.toggle('is-admin', isAdmin());
+    // Update the admin badge to show signed-in user info if available
+    const badge = document.querySelector('.admin-badge');
+    if (badge && _authState.isAdmin && _authState.email) {
+      badge.title = `Signed in as ${_authState.email}`;
+      const label = badge.querySelector('.admin-label');
+      if (label) label.textContent = _authState.name || _authState.email.split('@')[0];
+    }
+  }
 
   function openLogin() {
-    document.getElementById('login-pass').value = '';
+    // Show the right form based on auth mode
+    document.body.classList.toggle('auth-google', HAS_FIREBASE);
+    document.body.classList.toggle('auth-password', !HAS_FIREBASE);
+    const passInput = document.getElementById('login-pass');
+    if (passInput) passInput.value = '';
     document.getElementById('login-modal').classList.add('open');
-    setTimeout(() => document.getElementById('login-pass').focus(), 200);
+    if (!HAS_FIREBASE) setTimeout(() => passInput?.focus(), 200);
   }
   function closeLogin() { document.getElementById('login-modal').classList.remove('open'); }
 
+  // Password-mode login
   function doLogin() {
     const pass = document.getElementById('login-pass').value;
     if (pass === ADMIN_PASSWORD) {
@@ -2207,12 +2345,47 @@
     }
   }
 
-  function logout() {
+  // Google-mode login
+  async function doLoginGoogle() {
+    if (!window.RealtimeStore?.signInWithGoogle) { toast('Auth not ready'); return; }
+    const btn = document.getElementById('google-signin-btn');
+    if (btn) { btn.disabled = true; btn.classList.add('is-loading'); }
+    try {
+      const result = await window.RealtimeStore.signInWithGoogle();
+      const email = (result.user?.email || '').toLowerCase();
+      const allowed = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(email);
+      if (!allowed) {
+        await window.RealtimeStore.signOutUser();
+        toast(`${email} is not an admin on this site`);
+      } else {
+        closeLogin();
+        toast(`Welcome, ${result.user.displayName || email}`);
+      }
+      // onAuthStateChanged will fire and call applyAuth() / render()
+    } catch (e) {
+      console.error(e);
+      if (e.code === 'auth/popup-closed-by-user') {
+        // User cancelled — silent
+      } else if (e.code === 'auth/unauthorized-domain') {
+        toast('This domain isn\'t authorized in Firebase Auth settings');
+      } else {
+        toast('Sign in failed — see console');
+      }
+    } finally {
+      if (btn) { btn.disabled = false; btn.classList.remove('is-loading'); }
+    }
+  }
+
+  async function logout() {
     if (!confirm('Sign out of admin?')) return;
-    localStorage.removeItem(AUTH_KEY);
-    applyAuth();
+    if (HAS_FIREBASE) {
+      try { await window.RealtimeStore.signOutUser(); } catch(e) { console.error(e); }
+    } else {
+      localStorage.removeItem(AUTH_KEY);
+      applyAuth();
+      render();
+    }
     toast('Signed out');
-    render();
   }
 
   // Secret: triple-click the logo to open login (in case footer link is missed)
@@ -2444,6 +2617,9 @@
   })();
 
   // ── Init ────────────────────────────────────
+  // Set the auth mode class so the login modal renders the right form from the start
+  document.body.classList.toggle('auth-google', HAS_FIREBASE);
+  document.body.classList.toggle('auth-password', !HAS_FIREBASE);
   applyAuth();
   // Wait for the Firebase module bridge to be ready (it's a separate <script type="module">)
   if (HAS_FIREBASE && !window.RealtimeStore) {
