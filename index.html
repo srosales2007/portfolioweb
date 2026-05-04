@@ -6,7 +6,7 @@
 <title>Portfolio · Showcase your work</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Caveat:wght@700&family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #fafafa;
@@ -199,6 +199,98 @@
   }
   .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
+  /* ── CENTERED HERO + ROTATOR ───────────────── */
+  .hero-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 80px;
+    padding-bottom: 60px;
+    gap: 28px;
+  }
+  .hero-actions-centered { justify-content: center; }
+  .hero-sub-centered { margin: 0 auto; }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: all .25s var(--ease);
+  }
+  .hero-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--ink);
+  }
+  .hero-pill svg { transition: transform .25s var(--ease); }
+  .hero-pill:hover svg { transform: translateX(3px); }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(44px, 7.5vw, 96px);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -.03em;
+    margin: 0;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .hero-static {
+    color: var(--ink);
+  }
+
+  .rotator {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+    height: 1.15em;
+    padding: 0.05em 0;
+  }
+  .rotator-word {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, calc(-50% + 150%));
+    opacity: 0;
+    white-space: nowrap;
+    font-weight: 600;
+    transition:
+      transform .9s cubic-bezier(.22,1.2,.36,1),
+      opacity .55s ease;
+    will-change: transform, opacity;
+  }
+  .rotator-word.is-active {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+  .rotator-word.is-past {
+    transform: translate(-50%, calc(-50% - 150%));
+    opacity: 0;
+  }
+
+  /* Per-word font + color theming */
+  .rotator-word[data-style="amazing"]   { font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent); font-weight: 700; }
+  .rotator-word[data-style="new"]       { font-family: 'Bebas Neue', sans-serif; color: #1d4ed8; letter-spacing: .04em; font-weight: 400; }
+  .rotator-word[data-style="wonderful"] { font-family: 'Caveat', cursive; color: #a21caf; font-weight: 700; }
+  .rotator-word[data-style="beautiful"] { font-family: 'DM Serif Display', serif; font-style: italic; color: #047857; font-weight: 400; }
+  .rotator-word[data-style="smart"]     { font-family: 'JetBrains Mono', monospace; color: var(--ink); font-weight: 600; letter-spacing: -.04em; }
+
   /* ── STATS ─────────────────────────────────── */
   .stats {
     max-width: 1400px;
@@ -323,24 +415,118 @@
 
   .card-frame {
     position: relative;
-    aspect-ratio: 16 / 10;
     background: var(--bg-soft);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
-  .card-frame iframe {
+
+  /* Browser chrome bar (Vercel-style) */
+  .browser-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #fafafa;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+    height: 40px;
+  }
+  .traffic {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .traffic span {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    transition: background .25s;
+  }
+  .card:hover .traffic span:nth-child(1) { background: #ff5f57; }
+  .card:hover .traffic span:nth-child(2) { background: #febc2e; }
+  .card:hover .traffic span:nth-child(3) { background: #28c840; }
+
+  .url-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: var(--card);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    min-width: 0;
+    border: 1px solid #ececec;
+  }
+  .url-bar svg { flex-shrink: 0; opacity: .55; }
+  .url-bar span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #e8f9ef;
+    color: #0d8b3f;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    flex-shrink: 0;
+    border: 1px solid #b9ecca;
+  }
+  .live-pill .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34,197,94,.5);
+    animation: pulse 2s infinite;
+  }
+
+  /* Screenshot preview area */
+  .preview-shot {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: linear-gradient(135deg, #f5f5f5 0%, #ececec 100%);
+    overflow: hidden;
+  }
+  .preview-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    transition: transform 1.2s var(--ease), opacity .5s;
+    opacity: 0;
+  }
+  .preview-shot img.loaded { opacity: 1; }
+  .card:hover .preview-shot img.loaded { transform: scale(1.04); }
+
+  /* Loading shimmer */
+  .preview-shot::before {
+    content: '';
     position: absolute;
-    top: 0; left: 0;
-    width: 200%; height: 200%;
-    border: 0;
-    transform: scale(.5);
-    transform-origin: 0 0;
-    pointer-events: none;
-    transition: transform .8s var(--ease);
+    inset: 0;
+    background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+    z-index: 0;
   }
-  .card:hover .card-frame iframe {
-    transform: scale(.52);
+  .preview-shot.has-img::before { display: none; }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
-  .card-frame .placeholder {
+
+  .preview-shot .placeholder {
     position: absolute;
     inset: 0;
     display: flex;
@@ -349,19 +535,20 @@
     flex-direction: column;
     gap: 12px;
     color: var(--ink-soft);
-    background: linear-gradient(135deg, #f8f8f8 0%, #ececec 100%);
+    z-index: 1;
   }
-  .card-frame .placeholder svg { width: 48px; height: 48px; opacity: .3; }
+  .preview-shot .placeholder svg { width: 48px; height: 48px; opacity: .3; }
 
   .card-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.7) 100%);
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.78) 100%);
     opacity: 0;
     transition: opacity .35s;
     display: flex;
     align-items: flex-end;
-    padding: 24px;
+    padding: 20px;
+    z-index: 2;
   }
   .card:hover .card-overlay { opacity: 1; }
   .card-cta {
@@ -409,8 +596,8 @@
 
   .card-actions {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 52px;
+    right: 14px;
     display: flex;
     gap: 6px;
     opacity: 0;
@@ -647,6 +834,58 @@
   }
   .socials svg { width: 16px; height: 16px; }
 
+  /* ── ADMIN GATING ──────────────────────────── */
+  /* By default, hide everything that's admin-only. JS adds .is-admin to <body> when logged in. */
+  body:not(.is-admin) .admin-only { display: none !important; }
+  body.is-admin .client-only { display: none !important; }
+
+  .admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid #ffd9c9;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+  .admin-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .login-link {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: .6;
+    transition: opacity .2s;
+  }
+  .login-link:hover { opacity: 1; color: var(--ink); }
+
+  .sync-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    cursor: help;
+  }
+  .sync-status .sync-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #94a3b8;
+    box-shadow: 0 0 0 0 rgba(34,197,94,.5);
+    animation: pulse 2.4s infinite;
+  }
+
   /* ── TOAST ─────────────────────────────────── */
   .toast {
     position: fixed;
@@ -702,27 +941,51 @@
       <a href="#work">Work</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
-      <button class="btn" onclick="openModal()">
+      <button class="btn admin-only" onclick="openModal()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         Add project
       </button>
+      <span id="sync-status" class="sync-status admin-only" title="Sync status">
+        <span class="sync-dot"></span>
+        <span class="sync-label">Local only</span>
+      </span>
+      <span class="admin-badge admin-only" title="Logged in as admin">
+        <span class="dot"></span>
+        Admin
+      </span>
+      <button class="btn btn-ghost admin-only" onclick="logout()" style="padding:8px 14px;font-size:13px;">Log out</button>
     </div>
   </div>
 </nav>
 
-<section class="hero">
-  <div class="hero-eyebrow">
-    <span class="pulse"></span>
-    Available for new projects · 2026
-  </div>
-  <h1>Crafting digital<br/>experiences with <em>care</em>.</h1>
-  <p class="hero-sub">A living portfolio of work — each project embedded as a real, breathing webpage. Click any card to step inside.</p>
-  <div class="hero-actions">
+<section class="hero hero-centered">
+  <a class="hero-pill" href="#work" onclick="event.preventDefault();document.getElementById('work').scrollIntoView({behavior:'smooth'})">
+    Read our launch article
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+  </a>
+
+  <h1 class="hero-title">
+    <span class="hero-static">This is something</span>
+    <span class="rotator" id="rotator">
+      <span class="rotator-word is-active" data-style="amazing">amazing</span>
+      <span class="rotator-word" data-style="new">new</span>
+      <span class="rotator-word" data-style="wonderful">wonderful</span>
+      <span class="rotator-word" data-style="beautiful">beautiful</span>
+      <span class="rotator-word" data-style="smart">smart</span>
+    </span>
+  </h1>
+
+  <p class="hero-sub hero-sub-centered">A living portfolio of work — each project embedded as a real, breathing webpage. Click any card to step inside and explore.</p>
+
+  <div class="hero-actions hero-actions-centered">
+    <button class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+      Jump on a call
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z"/></svg>
+    </button>
     <button class="btn" onclick="document.getElementById('work').scrollIntoView({behavior:'smooth'})">
       View selected work
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
     </button>
-    <button class="btn btn-ghost" onclick="openModal()">Add a project</button>
   </div>
 </section>
 
@@ -755,7 +1018,7 @@
   <div class="foot-inner">
     <div>
       <p style="font-family:'Playfair Display',serif;font-size:24px;color:var(--ink);margin-bottom:6px;">Let's build something memorable.</p>
-      <p>hello@studio.com · &copy; 2026</p>
+      <p>hello@studio.com · &copy; 2026 · <a href="#" class="login-link client-only" onclick="event.preventDefault();openLogin();">Admin</a></p>
     </div>
     <div class="socials">
       <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
@@ -770,7 +1033,7 @@
 <div class="modal-backdrop" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <h2 id="modal-title">Add a project</h2>
-    <p class="modal-sub">Embed any live webpage as a project preview.</p>
+    <p class="modal-sub" id="modal-sub">Embed any live webpage as a project preview. Changes broadcast to every customer in real time.</p>
     <div class="field">
       <label for="p-title">Project title</label>
       <input type="text" id="p-title" placeholder="e.g. Aurora Coffee Co." />
@@ -780,8 +1043,8 @@
       <input type="text" id="p-desc" placeholder="A bold rebrand for a specialty roaster" />
     </div>
     <div class="field">
-      <label for="p-url">Webpage URL</label>
-      <input type="url" id="p-url" placeholder="https://example.com" />
+      <label for="p-url">Webpage URL <span style="color:var(--accent);font-weight:700;">·</span> <span style="color:var(--ink-soft);font-weight:500;text-transform:none;letter-spacing:0;font-size:11px;">live link shown to customers</span></label>
+      <input type="url" id="p-url" placeholder="https://example.com" style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;" />
     </div>
     <div class="field">
       <label for="p-tag">Category</label>
@@ -799,6 +1062,26 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
     </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal-backdrop" id="login-modal" onclick="if(event.target===this)closeLogin()">
+  <div class="modal" style="max-width:420px;">
+    <h2>Admin sign in</h2>
+    <p class="modal-sub">Enter the admin password to manage projects.</p>
+    <div class="field">
+      <label for="login-pass">Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeLogin()">Cancel</button>
+      <button class="btn" onclick="doLogin()">
+        Sign in
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <p style="margin-top:20px;font-size:12px;color:var(--ink-soft);text-align:center;">Default password: <code style="background:var(--bg-soft);padding:2px 6px;border-radius:4px;">admin123</code> — change in <code style="background:var(--bg-soft);padding:2px 6px;border-radius:4px;">index.html</code></p>
   </div>
 </div>
 
@@ -824,7 +1107,92 @@
 
 <div class="toast" id="toast">Project added</div>
 
+<!-- ────────────────────────────────────────────────────────────────
+     FIREBASE REAL-TIME BRIDGE
+     Loads the Firestore SDK and exposes window.RealtimeStore.
+     The main script below decides whether to use it based on FIREBASE_CONFIG.
+─────────────────────────────────────────────────────────────────── -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import {
+    getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs, writeBatch
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  window.RealtimeStore = {
+    _db: null,
+    _col: null,
+    _unsub: null,
+
+    init(config, onChange, onStatus) {
+      try {
+        const app = initializeApp(config);
+        this._db = getFirestore(app);
+        this._col = collection(this._db, 'projects');
+        onStatus && onStatus('connecting');
+
+        this._unsub = onSnapshot(this._col,
+          snap => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            // Sort by createdAt if present, otherwise by id
+            items.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+            onChange(items);
+            onStatus && onStatus('live');
+          },
+          err => {
+            console.error('Firestore subscription error:', err);
+            onStatus && onStatus('error');
+          }
+        );
+        return true;
+      } catch (e) {
+        console.error('Firebase init failed:', e);
+        onStatus && onStatus('error');
+        return false;
+      }
+    },
+
+    async add(project) {
+      const { id, ...data } = project;
+      data.createdAt = data.createdAt || Date.now();
+      await setDoc(doc(this._db, 'projects', id), data);
+    },
+    async update(id, patch) {
+      await updateDoc(doc(this._db, 'projects', id), patch);
+    },
+    async remove(id) {
+      await deleteDoc(doc(this._db, 'projects', id));
+    },
+    async seedIfEmpty(samples) {
+      const snap = await getDocs(this._col);
+      if (!snap.empty) return false;
+      const batch = writeBatch(this._db);
+      samples.forEach((p, i) => {
+        const { id, ...data } = p;
+        batch.set(doc(this._db, 'projects', id), { ...data, createdAt: Date.now() + i });
+      });
+      await batch.commit();
+      return true;
+    }
+  };
+  window.dispatchEvent(new CustomEvent('realtime-ready'));
+</script>
+
 <script>
+  // ── Firebase config ─────────────────────────
+  // Paste your Firebase project config here to enable real-time sync.
+  // Free setup: https://console.firebase.google.com → Add project → Build → Firestore Database (Start in test mode) → Project settings → Your apps → Web app → copy config.
+  // While the placeholder values stay, the app uses local-only mode (per-browser).
+  const FIREBASE_CONFIG = {
+    apiKey: "PASTE_YOUR_API_KEY",
+    authDomain: "PASTE.firebaseapp.com",
+    projectId: "PASTE_PROJECT_ID",
+    storageBucket: "PASTE.appspot.com",
+    messagingSenderId: "PASTE",
+    appId: "PASTE",
+  };
+  const HAS_FIREBASE = FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE_");
+
   // ── State ───────────────────────────────────
   const SAMPLE = [
     { id: 'p1', title: 'Anthropic', desc: 'AI safety, designed for humans.', url: 'https://www.anthropic.com', tag: 'web' },
@@ -833,18 +1201,93 @@
     { id: 'p4', title: 'Vercel', desc: 'Develop. Preview. Ship.', url: 'https://vercel.com', tag: 'app' },
   ];
   const STORAGE = 'portfolio.projects.v1';
-  let projects = load();
+  let projects = [];
   let currentFilter = 'all';
   let editingId = null;
 
-  function load() {
-    try {
-      const raw = localStorage.getItem(STORAGE);
-      if (raw) return JSON.parse(raw);
-    } catch(e){}
-    return [...SAMPLE];
+  // ── Store abstraction ───────────────────────
+  // Two backends: Firestore (real-time, shared across all customers) or localStorage (per-browser fallback).
+  const Store = {
+    mode: 'local',
+
+    init(onReady) {
+      if (HAS_FIREBASE && window.RealtimeStore) {
+        this.mode = 'firestore';
+        const ok = window.RealtimeStore.init(
+          FIREBASE_CONFIG,
+          items => {
+            projects = items;
+            render();
+            // Seed sample data on first run if collection is empty
+            if (items.length === 0 && !this._seeded) {
+              this._seeded = true;
+              window.RealtimeStore.seedIfEmpty(SAMPLE).catch(() => {});
+            }
+          },
+          status => setSyncStatus(status)
+        );
+        if (!ok) { this.mode = 'local'; this._loadLocal(); }
+        else onReady && onReady();
+      } else {
+        this.mode = 'local';
+        this._loadLocal();
+        setSyncStatus('local');
+        onReady && onReady();
+      }
+    },
+    _loadLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE);
+        projects = raw ? JSON.parse(raw) : [...SAMPLE];
+      } catch(e) { projects = [...SAMPLE]; }
+      // Defer first render so the DOM is ready
+      setTimeout(render, 0);
+    },
+    _saveLocal() { localStorage.setItem(STORAGE, JSON.stringify(projects)); },
+
+    async add(project) {
+      if (this.mode === 'firestore') {
+        await window.RealtimeStore.add(project);
+      } else {
+        projects.push(project);
+        this._saveLocal();
+        render();
+      }
+    },
+    async update(id, patch) {
+      if (this.mode === 'firestore') {
+        await window.RealtimeStore.update(id, patch);
+      } else {
+        projects = projects.map(p => p.id === id ? { ...p, ...patch } : p);
+        this._saveLocal();
+        render();
+      }
+    },
+    async remove(id) {
+      if (this.mode === 'firestore') {
+        await window.RealtimeStore.remove(id);
+      } else {
+        projects = projects.filter(p => p.id !== id);
+        this._saveLocal();
+        render();
+      }
+    }
+  };
+
+  function setSyncStatus(status) {
+    const el = document.getElementById('sync-status');
+    if (!el) return;
+    const states = {
+      live:       { dot: '#22c55e', text: 'Live sync',    title: 'Connected to Firestore — changes broadcast instantly to all customers.' },
+      connecting: { dot: '#f59e0b', text: 'Connecting…',  title: 'Connecting to Firestore…' },
+      error:      { dot: '#ef4444', text: 'Sync error',   title: 'Could not reach Firestore — falling back to local data.' },
+      local:      { dot: '#94a3b8', text: 'Local only',   title: 'Configure FIREBASE_CONFIG in index.html to share changes with all customers in real time.' },
+    };
+    const s = states[status] || states.local;
+    el.querySelector('.sync-dot').style.background = s.dot;
+    el.querySelector('.sync-label').textContent = s.text;
+    el.title = s.title;
   }
-  function save() { localStorage.setItem(STORAGE, JSON.stringify(projects)); }
 
   // ── Render ──────────────────────────────────
   const grid = document.getElementById('grid');
@@ -864,7 +1307,7 @@
       card.className = 'card';
       card.style.animationDelay = (i * 60) + 'ms';
       card.innerHTML = `
-        <div class="card-actions">
+        <div class="card-actions admin-only">
           <button class="icon-btn" title="Edit" onclick="event.stopPropagation();editProject('${p.id}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
@@ -873,15 +1316,26 @@
           </button>
         </div>
         <div class="card-frame">
-          ${p.url ? `<iframe src="${escapeAttr(p.url)}" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>` : `
-            <div class="placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-              <span>No preview</span>
-            </div>`}
-          <div class="card-overlay">
-            <div class="card-cta">
-              View project
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          <div class="browser-bar">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <div class="url-bar">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              <span>${escapeHtml(domainOf(p.url))}</span>
+            </div>
+            ${p.url ? `<span class="live-pill"><span class="live-dot"></span>Live</span>` : ''}
+          </div>
+          <div class="preview-shot" data-id="${p.id}">
+            ${p.url
+              ? `<img alt="${escapeAttr(p.title)} preview" src="${shotUrl(p.url)}" onload="this.classList.add('loaded');this.parentNode.classList.add('has-img')" onerror="onShotError(this)" />`
+              : `<div class="placeholder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                  <span>No preview</span>
+                </div>`}
+            <div class="card-overlay">
+              <div class="card-cta">
+                Visit ${escapeHtml(domainOf(p.url) || 'project')}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+              </div>
             </div>
           </div>
         </div>
@@ -893,13 +1347,16 @@
           <div class="card-tag">${escapeHtml(p.tag)}</div>
         </div>
       `;
-      card.addEventListener('click', () => openViewer(p));
+      card.addEventListener('click', () => {
+        if (p.url) window.open(p.url, '_blank', 'noopener');
+        else toast('No URL set for this project');
+      });
       grid.appendChild(card);
     });
 
-    // Add "+ Add" tile
+    // Add "+ Add" tile (admin only)
     const addTile = document.createElement('div');
-    addTile.className = 'card add-card';
+    addTile.className = 'card add-card admin-only';
     addTile.innerHTML = `
       <div class="add-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
@@ -913,6 +1370,42 @@
 
   function escapeHtml(s){return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function escapeAttr(s){return escapeHtml(s);}
+
+  // ── Screenshot service ──────────────────────
+  // Uses Microlink's free screenshot API. Returns the image directly via the embed param.
+  // Falls back to thum.io if Microlink fails (handled in onShotError).
+  function shotUrl(url) {
+    if (!url) return '';
+    return `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=1280&viewport.height=800`;
+  }
+  function shotFallback(url) {
+    return `https://image.thum.io/get/width/1200/crop/750/noanimate/${url}`;
+  }
+  function onShotError(img) {
+    // first failure: try thum.io fallback
+    if (!img.dataset.fallback) {
+      const original = img.src;
+      const orig = decodeURIComponent(original.split('url=')[1]?.split('&')[0] || '');
+      if (orig) {
+        img.dataset.fallback = '1';
+        img.src = shotFallback(orig);
+        return;
+      }
+    }
+    // total failure: replace with placeholder
+    const wrap = img.parentNode;
+    wrap.classList.add('has-img');
+    img.remove();
+    const ph = document.createElement('div');
+    ph.className = 'placeholder';
+    ph.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Preview unavailable</span>`;
+    wrap.insertBefore(ph, wrap.firstChild);
+  }
+  function domainOf(url) {
+    if (!url) return '';
+    try { return new URL(url).hostname.replace(/^www\./, ''); }
+    catch(e) { return url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]; }
+  }
 
   // ── Filters ─────────────────────────────────
   document.querySelectorAll('.filter').forEach(btn => {
@@ -951,7 +1444,7 @@
     document.getElementById('modal').classList.add('open');
   }
 
-  function saveProject() {
+  async function saveProject() {
     const title = document.getElementById('p-title').value.trim();
     const desc = document.getElementById('p-desc').value.trim();
     let url = document.getElementById('p-url').value.trim();
@@ -959,21 +1452,30 @@
     if (!title) { toast('Please add a title'); return; }
     if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
 
-    if (editingId) {
-      projects = projects.map(p => p.id === editingId ? { ...p, title, desc, url, tag } : p);
-      toast('Project updated');
-    } else {
-      projects.push({ id: 'p' + Date.now(), title, desc, url, tag });
-      toast('Project added');
+    try {
+      if (editingId) {
+        await Store.update(editingId, { title, desc, url, tag });
+        toast(Store.mode === 'firestore' ? 'Updated · synced to all customers' : 'Project updated');
+      } else {
+        await Store.add({ id: 'p' + Date.now(), title, desc, url, tag });
+        toast(Store.mode === 'firestore' ? 'Added · synced to all customers' : 'Project added');
+      }
+      closeModal();
+    } catch (e) {
+      console.error(e);
+      toast('Save failed — check connection');
     }
-    save(); render(); closeModal();
   }
 
-  function removeProject(id) {
+  async function removeProject(id) {
     if (!confirm('Remove this project?')) return;
-    projects = projects.filter(p => p.id !== id);
-    save(); render();
-    toast('Project removed');
+    try {
+      await Store.remove(id);
+      toast(Store.mode === 'firestore' ? 'Removed · synced to all customers' : 'Project removed');
+    } catch (e) {
+      console.error(e);
+      toast('Remove failed — check connection');
+    }
   }
 
   // ── Viewer ──────────────────────────────────
@@ -1026,13 +1528,89 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       if (document.getElementById('viewer').classList.contains('open')) closeViewer();
+      else if (document.getElementById('login-modal').classList.contains('open')) closeLogin();
       else if (document.getElementById('modal').classList.contains('open')) closeModal();
     }
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openModal(); }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (isAdmin()) openModal(); else openLogin();
+    }
   });
 
+  // ── Auth (client-side only — change ADMIN_PASSWORD below) ─────
+  const ADMIN_PASSWORD = 'admin123';
+  const AUTH_KEY = 'portfolio.auth.v1';
+
+  function isAdmin() { return localStorage.getItem(AUTH_KEY) === '1'; }
+  function applyAuth() { document.body.classList.toggle('is-admin', isAdmin()); }
+
+  function openLogin() {
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-modal').classList.add('open');
+    setTimeout(() => document.getElementById('login-pass').focus(), 200);
+  }
+  function closeLogin() { document.getElementById('login-modal').classList.remove('open'); }
+
+  function doLogin() {
+    const pass = document.getElementById('login-pass').value;
+    if (pass === ADMIN_PASSWORD) {
+      localStorage.setItem(AUTH_KEY, '1');
+      applyAuth();
+      closeLogin();
+      toast('Welcome back, admin');
+      render();
+    } else {
+      toast('Incorrect password');
+      const input = document.getElementById('login-pass');
+      input.style.borderColor = '#ef4444';
+      input.value = '';
+      setTimeout(() => input.style.borderColor = '', 1200);
+    }
+  }
+
+  function logout() {
+    if (!confirm('Sign out of admin?')) return;
+    localStorage.removeItem(AUTH_KEY);
+    applyAuth();
+    toast('Signed out');
+    render();
+  }
+
+  // Secret: triple-click the logo to open login (in case footer link is missed)
+  let logoClicks = 0, logoTimer;
+  document.querySelector('.logo').addEventListener('click', e => {
+    e.preventDefault();
+    logoClicks++;
+    clearTimeout(logoTimer);
+    logoTimer = setTimeout(() => logoClicks = 0, 600);
+    if (logoClicks >= 3 && !isAdmin()) { logoClicks = 0; openLogin(); }
+  });
+
+  // ── Hero word rotator ───────────────────────
+  (function initRotator(){
+    const words = document.querySelectorAll('#rotator .rotator-word');
+    if (!words.length) return;
+    let idx = 0;
+    setInterval(() => {
+      const prev = idx;
+      idx = (idx + 1) % words.length;
+      words.forEach((w, i) => {
+        w.classList.remove('is-active', 'is-past');
+        if (i === idx) w.classList.add('is-active');
+        else if (i === prev) w.classList.add('is-past');
+        // others stay below (default state)
+      });
+    }, 2200);
+  })();
+
   // ── Init ────────────────────────────────────
-  render();
+  applyAuth();
+  // Wait for the Firebase module bridge to be ready (it's a separate <script type="module">)
+  if (HAS_FIREBASE && !window.RealtimeStore) {
+    window.addEventListener('realtime-ready', () => Store.init(), { once: true });
+  } else {
+    Store.init();
+  }
 </script>
 
 </body>
